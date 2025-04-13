@@ -24,12 +24,15 @@ function ProportionCalculator({ onBack }: { onBack: () => void }) {
   const [c, setC] = useState('');
   const [result, setResult] = useState('');
 
-  const calculateProportion = () => {
+  // Funzione per calcolare quando cambiano i valori
+  React.useEffect(() => {
     if (a && b && c) {
       const x = (Number(b) * Number(c)) / Number(a);
       setResult(x.toFixed(2));
+    } else {
+      setResult('');
     }
-  };
+  }, [a, b, c]); // Si attiva quando uno qualsiasi dei valori cambia
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: '#E6E9FF' }]}>
@@ -45,52 +48,51 @@ function ProportionCalculator({ onBack }: { onBack: () => void }) {
         
         <View style={styles.inputContainer}>
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>A</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              value={a}
-              onChangeText={setA}
-            />
+            <View style={styles.input}>
+              <Text style={styles.inputLabel}>A</Text>
+              <TextInput
+                style={styles.textInput}
+                keyboardType="numeric"
+                value={a}
+                onChangeText={setA}
+              />
+            </View>
           </View>
           
           <Text style={styles.operator}>:</Text>
           
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>B</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              value={b}
-              onChangeText={setB}
-            />
+            <View style={styles.input}>
+              <Text style={styles.inputLabel}>B</Text>
+              <TextInput
+                style={styles.textInput}
+                keyboardType="numeric"
+                value={b}
+                onChangeText={setB}
+              />
+            </View>
           </View>
         </View>
 
         <View style={styles.inputContainer}>
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>C</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              value={c}
-              onChangeText={setC}
-            />
+            <View style={styles.input}>
+              <Text style={styles.inputLabel}>C</Text>
+              <TextInput
+                style={styles.textInput}
+                keyboardType="numeric"
+                value={c}
+                onChangeText={setC}
+              />
+            </View>
           </View>
           
           <Text style={styles.operator}>:</Text>
           
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>RISULTATO D</Text>
-            <Text style={[styles.input, styles.result]}>{result || ''}</Text>
+            <Text style={styles.resultText}>{result}</Text>
           </View>
         </View>
-
-        <TouchableOpacity 
-          style={styles.calculateButton}
-          onPress={calculateProportion}>
-          <Text style={styles.calculateButtonText}>Calcola</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -222,35 +224,50 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  inputLabel: {
-    fontSize: 16,
-    marginBottom: 5,
-    fontWeight: '500',
-  },
   input: {
     width: '90%',
-    height: 40,
-    borderBottomWidth: 1,
-    borderBottomColor: '#000',
-    textAlign: 'center',
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginRight: 10,
+  },
+  textInput: {
+    flex: 1,
     fontSize: 18,
-    backgroundColor: 'transparent',
+    textAlign: 'center',
+    padding: 0,
   },
   operator: {
-    fontSize: 24,
-    marginHorizontal: 15,
-    fontWeight: '500',
+    fontSize: 20,
+    marginHorizontal: 10,
   },
-  result: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#000',
+  resultText: {
+    fontSize: 18,
+    textAlign: 'center',
+    flex: 1,
+    height: 50,
+    lineHeight: 50,
   },
   calculateButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#E6E9FF',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
     marginTop: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   calculateButtonText: {
     fontSize: 18,
