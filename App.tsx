@@ -32,42 +32,58 @@ function ProportionCalculator({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: '#E6E9FF' }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>← Indietro</Text>
         </TouchableOpacity>
-        <Text style={styles.calculatorTitle}>Proporzioni</Text>
       </View>
+      
       <View style={styles.calculatorContainer}>
-        <Text style={styles.proportionText}>a : b = c : x</Text>
+        <Text style={styles.calculatorTitle}>CALCOLA PROPORZIONE</Text>
+        <Text style={styles.subtitle}>INSERISCI I VALORI</Text>
         
-        <View style={styles.inputRow}>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={a}
-            onChangeText={setA}
-            placeholder="a"
-          />
+        <View style={styles.inputContainer}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>A</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={a}
+              onChangeText={setA}
+            />
+          </View>
+          
           <Text style={styles.operator}>:</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={b}
-            onChangeText={setB}
-            placeholder="b"
-          />
-          <Text style={styles.operator}>=</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={c}
-            onChangeText={setC}
-            placeholder="c"
-          />
+          
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>B</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={b}
+              onChangeText={setB}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>C</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={c}
+              onChangeText={setC}
+            />
+          </View>
+          
           <Text style={styles.operator}>:</Text>
-          <Text style={styles.result}>{result || 'x'}</Text>
+          
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>RISULTATO D</Text>
+            <Text style={[styles.input, styles.result]}>{result || ''}</Text>
+          </View>
         </View>
 
         <TouchableOpacity 
@@ -187,41 +203,54 @@ const styles = StyleSheet.create({
   calculatorTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    flex: 1,
+    marginBottom: 10,
     textAlign: 'center',
   },
-  proportionText: {
-    fontSize: 20,
-    marginBottom: 20,
+  subtitle: {
+    fontSize: 16,
+    marginBottom: 40,
+    textAlign: 'center',
   },
-  inputRow: {
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 30,
+    width: '100%',
+  },
+  inputGroup: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  inputLabel: {
+    fontSize: 16,
+    marginBottom: 5,
+    fontWeight: '500',
   },
   input: {
-    width: 50,
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
+    width: '90%',
+    height: 40,
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
     textAlign: 'center',
     fontSize: 18,
+    backgroundColor: 'transparent',
   },
   operator: {
-    fontSize: 20,
-    marginHorizontal: 10,
+    fontSize: 24,
+    marginHorizontal: 15,
+    fontWeight: '500',
   },
   result: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginLeft: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
   },
   calculateButton: {
-    backgroundColor: '#E6E9FF',
+    backgroundColor: '#fff',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
+    marginTop: 20,
   },
   calculateButtonText: {
     fontSize: 18,
