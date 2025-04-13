@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   StatusBar,
@@ -15,7 +15,19 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  ScrollView,
+  Modal,
+  Alert,
 } from 'react-native';
+
+// Tipo per una proporzione salvata
+type SavedProportion = {
+  id: string;
+  a: string;
+  b: string;
+  c: string;
+  result: string;
+};
 
 // Schermata Calcolatore di Proporzioni
 function ProportionCalculator({ onBack }: { onBack: () => void }) {
@@ -23,16 +35,50 @@ function ProportionCalculator({ onBack }: { onBack: () => void }) {
   const [b, setB] = useState('');
   const [c, setC] = useState('');
   const [result, setResult] = useState('');
+  const [savedProportions, setSavedProportions] = useState<SavedProportion[]>([]);
 
-  // Funzione per calcolare quando cambiano i valori
-  React.useEffect(() => {
+  useEffect(() => {
     if (a && b && c) {
       const x = (Number(b) * Number(c)) / Number(a);
       setResult(x.toFixed(2));
     } else {
       setResult('');
     }
-  }, [a, b, c]); // Si attiva quando uno qualsiasi dei valori cambia
+  }, [a, b, c]);
+
+  const handleSaveProportion = () => {
+    if (!a || !b) {
+      Alert.alert('Errore', 'Inserisci i valori A e B prima di salvare');
+      return;
+    }
+    const newProportion: SavedProportion = {
+      id: Date.now().toString(),
+      a: a,
+      b: b,
+      c: '',
+      result: '',
+    };
+    setSavedProportions([...savedProportions, newProportion]);
+  };
+
+  const handleUpdateProportionC = (id: string, newC: string) => {
+    setSavedProportions(savedProportions.map(proportion => {
+      if (proportion.id === id) {
+        const result = newC ? ((Number(proportion.b) * Number(newC)) / Number(proportion.a)).toFixed(2) : '';
+        return { ...proportion, c: newC, result };
+      }
+      return proportion;
+    }));
+  };
+
+  const handleUseSavedProportion = (proportion: SavedProportion) => {
+    setA(proportion.a);
+    setB(proportion.b);
+  };
+
+  const handleDeleteProportion = (id: string) => {
+    setSavedProportions(savedProportions.filter(proportion => proportion.id !== id));
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: '#E6E9FF' }]}>
@@ -93,6 +139,49 @@ function ProportionCalculator({ onBack }: { onBack: () => void }) {
             <Text style={styles.resultText}>{result}</Text>
           </View>
         </View>
+
+        <TouchableOpacity 
+          style={styles.addButton} 
+          onPress={handleSaveProportion}>
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
+
+        <ScrollView style={styles.savedList}>
+          {savedProportions.map((proportion) => (
+            <View key={proportion.id} style={styles.savedItem}>
+              <View style={styles.savedItemHeader}>
+                <TouchableOpacity
+                  onPress={() => handleUseSavedProportion(proportion)}
+                  style={styles.savedProportionValues}
+                >
+                  <Text style={styles.savedItemValues}>
+                    {proportion.a} : {proportion.b}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleDeleteProportion(proportion.id)}
+                  style={styles.deleteButton}
+                >
+                  <Text style={styles.deleteButtonText}>🗑️</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.savedItemCalculator}>
+                <View style={styles.savedItemInput}>
+                  <Text style={styles.savedItemLabel}>C</Text>
+                  <TextInput
+                    style={styles.savedItemTextInput}
+                    keyboardType="numeric"
+                    value={proportion.c}
+                    onChangeText={(text) => handleUpdateProportionC(proportion.id, text)}
+                    placeholder="Inserisci C"
+                  />
+                </View>
+                <Text style={styles.operator}>:</Text>
+                <Text style={styles.savedItemResult}>{proportion.result}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -280,6 +369,149 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: 18,
     color: '#007AFF',
+  },
+  addButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#B19CD9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  addButtonText: {
+    fontSize: 30,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  savedList: {
+    flex: 1,
+    width: '100%',
+  },
+  savedItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+  },
+  savedItemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  savedProportionValues: {
+    flex: 1,
+    paddingVertical: 6,
+  },
+  deleteButton: {
+    padding: 8,
+  },
+  deleteButtonText: {
+    fontSize: 20,
+  },
+  savedItemValues: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: 'bold',
+  },
+  savedItemCalculator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  savedItemInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  savedItemLabel: {
+    fontSize: 16,
+    marginRight: 10,
+    color: '#666',
+  },
+  savedItemTextInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    fontSize: 16,
+  },
+  savedItemResult: {
+    fontSize: 16,
+    color: '#666',
+    flex: 1,
+    textAlign: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    width: '80%',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    zIndex: 1001,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modalButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    marginHorizontal: 5,
+  },
+  modalButtonCancel: {
+    backgroundColor: '#ccc',
+  },
+  modalButtonSave: {
+    backgroundColor: '#B19CD9',
+  },
+  modalButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });
 
