@@ -16,8 +16,8 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  Modal,
   Alert,
+  Image,
 } from 'react-native';
 
 // Tipo per una proporzione salvata
@@ -149,7 +149,7 @@ function ProportionCalculator({ onBack }: { onBack: () => void }) {
         <ScrollView style={styles.savedList}>
           {savedProportions.map((proportion) => (
             <View key={proportion.id} style={styles.savedItem}>
-              <View style={styles.savedItemHeader}>
+              <View style={styles.savedItemCalculator}>
                 <TouchableOpacity
                   onPress={() => handleUseSavedProportion(proportion)}
                   style={styles.savedProportionValues}
@@ -158,26 +158,26 @@ function ProportionCalculator({ onBack }: { onBack: () => void }) {
                     {proportion.a} : {proportion.b}
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleDeleteProportion(proportion.id)}
-                  style={styles.deleteButton}
-                >
-                  <Text style={styles.deleteButtonText}>🗑️</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.savedItemCalculator}>
                 <View style={styles.savedItemInput}>
-                  <Text style={styles.savedItemLabel}>C</Text>
                   <TextInput
-                    style={styles.savedItemTextInput}
+                    style={[styles.savedItemTextInput, { marginLeft: 0 }]}
                     keyboardType="numeric"
                     value={proportion.c}
                     onChangeText={(text) => handleUpdateProportionC(proportion.id, text)}
-                    placeholder="Inserisci C"
+                    placeholder="C"
                   />
                 </View>
                 <Text style={styles.operator}>:</Text>
                 <Text style={styles.savedItemResult}>{proportion.result}</Text>
+                <TouchableOpacity
+                  onPress={() => handleDeleteProportion(proportion.id)}
+                  style={styles.deleteButton}
+                >
+                  <Image 
+                    source={require('./assets/trash-icon.png')} 
+                    style={styles.deleteButtonIcon}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           ))}
@@ -404,56 +404,45 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
   },
-  savedItemHeader: {
+  savedItemCalculator: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'space-between',
   },
   savedProportionValues: {
-    flex: 1,
-    paddingVertical: 6,
-  },
-  deleteButton: {
-    padding: 8,
-  },
-  deleteButtonText: {
-    fontSize: 20,
+    marginRight: 10,
   },
   savedItemValues: {
     fontSize: 16,
     color: '#666',
     fontWeight: 'bold',
   },
-  savedItemCalculator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   savedItemInput: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  savedItemLabel: {
-    fontSize: 16,
-    marginRight: 10,
-    color: '#666',
+    width: 60,
   },
   savedItemTextInput: {
-    flex: 1,
     height: 40,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     paddingHorizontal: 10,
-    fontSize: 16,
+    fontSize: 14,
+    textAlign: 'center',
   },
   savedItemResult: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666',
-    flex: 1,
+    width: 45,
     textAlign: 'center',
+  },
+  deleteButton: {
+    padding: 8,
+    marginLeft: 10,
+  },
+  deleteButtonIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#B19CD9',
   },
   modalContainer: {
     flex: 1,
